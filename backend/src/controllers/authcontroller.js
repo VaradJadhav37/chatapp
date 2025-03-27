@@ -1,7 +1,7 @@
 const generateToken = require('../lib/utils.js');
 const bcrypt = require('bcrypt');
 const User = require('../models/usermodel.js'); // Assuming you have a User model
-
+const cloudinary = require('../lib/cloudinary.js'); //
 const signup = async (req, res) => {
     const { username, fullname, email, password } = req.body;
     try {
@@ -86,5 +86,31 @@ const logout = (req, res) => {
         res.status(500).send('Something went wrong'); // Generic error message for client
     }
 };
+const updateProfile = async (req, res) => {
+    try{
+        const {profilePic}=req.body;
+        const userId=req.user._id;
+        if(!profilePic) {
+            return res.status(400).json({message:'Profile Pic is Required'});
+        }
+        const uploadResponse=await cloudinary.uploader.upload(profilePic)
+        const updatedUser=await User.findByIdAndUpdate(userId,{profilePic:uploadResponse.secure_url},{new:true});
+        res.status(200).json(updatedUser)
 
-module.exports = { signup, login, logout };
+        }
+        catch(err) {
+            console.log("Error in Updating Profile",err);
+            res.status(500).send('Something went wrong'); 
+        }
+    };
+const checkAuth=(req, res) => { 
+    try{
+        res.status(200).json(req.user);
+    }
+        catch(error){
+            console.log("Error in Check Auth",error);
+            res.status(500).send('Something went wrong');
+        }
+    } 
+
+module.exports = { signup, login, logout,updateProfile,checkAuth};
