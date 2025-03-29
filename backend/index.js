@@ -4,6 +4,7 @@ const authRoutes = require('./src/routes/auth.js'); // Adjust the path as needed
 const connectDB=require('./src//lib/db.js')
 const cookieParser = require('cookie-parser');
 const messageRoutes=require('./src/routes/messageroutes.js'); //
+const cors = require('cors'); 
 // Load environment variables from .env file
 dotenv.config();
 
